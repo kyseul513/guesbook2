@@ -11,10 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.javaex.dao.GuestbookDao;
+import com.javaex.util.WebUtil;
 import com.javaex.vo.GuestbookVo;
 
 @WebServlet("/gbc")
 public class GuestbookController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
@@ -28,9 +30,8 @@ public class GuestbookController extends HttpServlet {
 		
 		request.setAttribute("glist", list);
 		
-		RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/list.jsp");
-		rd.forward(request, response);
-
+		WebUtil.forward(request, response, "/WEB-INF/list.jsp");
+		
 		
 	}else if("write".equals(act)) {
 		
@@ -42,13 +43,12 @@ public class GuestbookController extends HttpServlet {
 		GuestbookDao guestbookDao = new GuestbookDao();
 		guestbookDao.insert(guestbookVo);
 		
-		response.sendRedirect("/guestbook2/gbc?action=list");
+		WebUtil.redirect(request, response, "/guestbook2/gbc");
 	
-	
+		
 	}else if("deleteForm".equals(act)) {	
 		
-		RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/deleteForm.jsp");
-		rd.forward(request, response);
+		WebUtil.forward(request, response, "/WEB-INF/deleteForm.jsp");
 		
 		
 	}else if("delete".equals(act)) {
@@ -61,8 +61,16 @@ public class GuestbookController extends HttpServlet {
 		
 		guestbookDao.delete(guestobokVo);
 		
-		response.sendRedirect("/guestbook2/gbc?action=list");
+		WebUtil.redirect(request, response, "/guestbook2/gbc");
 		
+		
+	}else {//기본값
+		GuestbookDao guestbookDao = new GuestbookDao();
+		List<GuestbookVo> list= guestbookDao.getList();
+		
+		request.setAttribute("guestList", list);
+		
+		WebUtil.forward(request, response, "/WEB-INF/list.jsp");
 	}
 	}
 
